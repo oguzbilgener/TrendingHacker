@@ -1,4 +1,4 @@
-package com.oguzdev.trendinghacker.bg;
+package com.oguzdev.trendinghacker.client;
 
 import android.content.Context;
 import android.os.Handler;
@@ -96,7 +96,6 @@ public class HNClient {
                         finalizeIfFinished();
                     }
                 }
-
                 @Override
                 public void onCancelled(FirebaseError firebaseError) {
                     incrementRetrievedCount();

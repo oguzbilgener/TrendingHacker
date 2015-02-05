@@ -1,19 +1,36 @@
 package com.oguzdev.trendinghacker.bg;
 
+import android.app.Notification;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.BitmapFactory;
+import android.os.Handler;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.preference.Preference;
 import android.preference.PreferenceManager;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationManagerCompat;
+import android.util.Log;
 
 import com.google.gson.Gson;
+import com.oguzdev.trendinghacker.R;
+import com.oguzdev.trendinghacker.client.HNClient;
+import com.oguzdev.trendinghacker.model.NewsItem;
+import com.oguzdev.trendinghacker.model.UpdatePrefs;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class UpdateService extends Service {
 
-    public static final int ALARM_CODE = 991917;
+    final static String GROUP_KEY = "group_key_trending_news";
+
+    public static final int UPDATE_TIMEOUT = 90; // seconds
+    public static final int MIN_UPDATE_INTERVAL = 30; // minutes
 
     public UpdateService() {
     }
@@ -27,58 +44,109 @@ public class UpdateService extends Service {
     @Override
     public int onStartCommand(final Intent intent, int flags, int startId) {
         PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
-        PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "");
+        final PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "");
         if(!wl.isHeld()) {
             wl.acquire();
         }
+        Log.i("oguz", "UpdateService startCommand");
 
-        try {
+        // Set a timeout to release the wake lock just in case something goes bad.
+        final Handler timeoutHandler = new Handler();
+        timeoutHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if(wl.isHeld()) {
+                    wl.release();
+                }
+            }
+        }, UPDATE_TIMEOUT);
 
-            return START_STICKY;
+        UpdatePrefs prefs = UpdatePrefs.getUpdatePrefs(this);
+        if(prefs == null) {
+            prefs = new UpdatePrefs();
         }
-        finally {
+
+        if(prefs.enabled && (System.currentTimeMillis() -
+                prefs.lastUpdate >= MIN_UPDATE_INTERVAL * 60 * 1000)) {
+            HNClient hn = new HNClient(this, new TrendingResults(prefs, wl, this));
+            hn.beginRetrieveTrending();
+        }
+        else {
             if(wl.isHeld()) {
                 wl.release();
             }
         }
+        return START_NOT_STICKY;
     }
 
-    public UpdatePrefs getUpdatePrefs(Context context) {
-        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
-        UpdatePrefs prefs = null;
-        if(sp.contains(UpdatePrefs.kEnabled) && sp.contains(UpdatePrefs.kLastUpdate)
-                && sp.contains(UpdatePrefs.kRecentlyDisplayedItems)) {
-            Long[] recentlyDisplayedItems = new Gson().fromJson(sp.getString(
-                    UpdatePrefs.kRecentlyDisplayedItems, ""), Long[].class);
-            prefs = new UpdatePrefs(sp.getBoolean(UpdatePrefs.kEnabled, false),
-                    sp.getLong(UpdatePrefs.kLastUpdate, 0), recentlyDisplayedItems);
+    private class TrendingResults implements HNClient.RetrieveTrendingListener {
+        private UpdatePrefs prefs;
+        private PowerManager.WakeLock wl;
+        private Context context;
+
+        public TrendingResults(UpdatePrefs prefs, PowerManager.WakeLock wl, Context context) {
+            this.prefs = prefs;
+            this.wl = wl;
+            this.context = context;
         }
-        return prefs;
-    }
 
-    public void storeUpdatePrefs(UpdatePrefs prefs, Context context) {
-        if(prefs == null) {
-            throw new IllegalArgumentException("no prefs to store");
-        }
-        String recentlyDisplayedStr = new Gson().toJson(prefs.recentlyDisplayedItems);
-        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
-        sp.edit().putBoolean(UpdatePrefs.kEnabled, prefs.enabled)
-                 .putLong(UpdatePrefs.kLastUpdate, prefs.lastUpdate)
-                 .putString(UpdatePrefs.kRecentlyDisplayedItems, recentlyDisplayedStr).apply();
-    }
+        @Override
+        public void onRetrieve(NewsItem[] items) {
+            if(items != null) {
+                Log.d("oguz", "retrieved news items with length " + items.length);
+                List<NewsItem> newItems = new ArrayList<>();
+                for(int i=0;i<items.length;i++) {
+                    if(items[i] != null) {
+                        newItems.add(items[i]);
+                    }
+                }
+                if(prefs != null) {
+                    if(prefs.recentlyDisplayedItems != null) {
+                        for (int i = 0; i < prefs.recentlyDisplayedItems.length &&
+                                newItems.size() > 0; i++) {
+                            for(int j = 0; j < newItems.size(); j++) {
+                                if(prefs.recentlyDisplayedItems[i].id.equals(newItems.get(j).id)) {
+                                    newItems.remove(j);
+                                }
+                            }
+                        }
+                    }
+                    if(newItems.size() > 3) {
+                        newItems = newItems.subList(0, 3);
+                    }
+                    NotificationManagerCompat notificationManager =
+                        NotificationManagerCompat.from(context);
 
-    public static class UpdatePrefs {
-        public static final String kEnabled = "update_enabled";
-        public static final String kLastUpdate = "last_update";
-        public static final String kRecentlyDisplayedItems = "recently_displayed_items";
-        public Boolean enabled;
-        public Long lastUpdate;
-        public Long[] recentlyDisplayedItems;
+                    NotificationCompat.BigTextStyle bigStyle = new NotificationCompat.BigTextStyle();
 
-        public UpdatePrefs(Boolean enabled, Long lastUpdate, Long[] recentlyDisplayedItems) {
-            this.enabled = enabled;
-            this.lastUpdate = lastUpdate;
-            this.recentlyDisplayedItems = recentlyDisplayedItems;
+                    NotificationCompat.WearableExtender wearableExtender =
+                            new NotificationCompat.WearableExtender()
+                                    .setHintHideIcon(true)
+                                    .setBackground(BitmapFactory.decodeResource(context.getResources(), R.drawable.contemporary_china));
+
+                    NotificationCompat.Builder builder = new NotificationCompat.Builder(context)
+                        .setSmallIcon(R.mipmap.ic_launcher)
+//                        .setGroup(GROUP_KEY)
+                        .extend(wearableExtender);
+
+                    for(NewsItem item: newItems) {
+                        Intent saveIntent = new Intent(Intent.ACTION_VIEW);
+                        PendingIntent savePendingIntent =
+                                PendingIntent.getActivity(context, 0, saveIntent, 0);
+                        Notification notification = builder.setStyle(bigStyle.setBigContentTitle(item.title))
+                                                           .addAction(android.R.drawable.ic_input_add, getString(R.string.action_save), savePendingIntent)
+                                                           .build();
+                        notificationManager.notify((int)(long) item.id, notification);
+                    }
+
+
+                    prefs.insertRecentlyDisplayed(newItems);
+                    prefs.storeUpdatePrefs(context);
+                }
+            }
+            if(wl != null && wl.isHeld()) {
+                wl.release();
+            }
         }
     }
 }

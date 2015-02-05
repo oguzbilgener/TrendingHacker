@@ -1,10 +1,12 @@
 package com.oguzdev.trendinghacker.model;
 
+import java.io.Serializable;
+
 /**
  * Copyright 2015 Oğuz Bilgener
  * TrendingHacker
  */
-public class NewsItem {
+public class NewsItem implements Serializable {
     public Long id;
     public Long time;
     public String title;

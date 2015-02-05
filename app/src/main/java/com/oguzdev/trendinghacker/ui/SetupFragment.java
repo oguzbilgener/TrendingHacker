@@ -1,14 +1,21 @@
 package com.oguzdev.trendinghacker.ui;
 
 import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import com.oguzdev.trendinghacker.R;
+import com.oguzdev.trendinghacker.bg.UpdateService;
+import com.oguzdev.trendinghacker.model.NewsItem;
+import com.oguzdev.trendinghacker.model.UpdatePrefs;
+import com.oguzdev.trendinghacker.util.AlarmUtils;
 
 
 /**
@@ -19,7 +26,7 @@ import com.oguzdev.trendinghacker.R;
  * Use the {@link SetupFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class SetupFragment extends Fragment {
+public class SetupFragment extends Fragment implements View.OnClickListener {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -30,6 +37,8 @@ public class SetupFragment extends Fragment {
     private String mParam2;
 
     private OnFragmentInteractionListener mListener;
+
+    private UpdatePrefs prefs;
 
     /**
      * Use this factory method to create a new instance of
@@ -67,6 +76,10 @@ public class SetupFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_setup, container, false);
 
+        Button serviceToggleButton = (Button) rootView.findViewById(R.id.button_service_toggle);
+        serviceToggleButton.setOnClickListener(this);
+        updateServiceToggleButton(serviceToggleButton);
+
         return rootView;
     }
 
@@ -86,12 +99,48 @@ public class SetupFragment extends Fragment {
             throw new ClassCastException(activity.toString()
                     + " must implement OnFragmentInteractionListener");
         }
+        prefs = UpdatePrefs.getUpdatePrefs(activity);
+        if(prefs == null) {
+            prefs = new UpdatePrefs();
+        }
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    @Override
+    public void onClick(View v) {
+        if(v.getId() == R.id.button_service_toggle) {
+            toggleService();
+            updateServiceToggleButton((Button) v);
+        }
+    }
+
+    public void toggleService() {
+        prefs.enabled = !prefs.enabled;
+        if(getActivity() != null) {
+            Context context = getActivity();
+            if (prefs.enabled) {
+                AlarmUtils.setupHourlyAlarm(context);
+                context.startService(new Intent(context, UpdateService.class));
+            } else {
+                AlarmUtils.cancelHourlyAlarm(context);
+                prefs.recentlyDisplayedItems = new NewsItem[0];
+            }
+            prefs.storeUpdatePrefs(context);
+        }
+    }
+
+    public void updateServiceToggleButton(Button button) {
+        if(prefs.enabled) {
+            button.setText(getString(R.string.button_service_disable));
+        }
+        else {
+            button.setText(getString(R.string.button_service_enable));
+        }
     }
 
     /**

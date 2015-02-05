@@ -8,7 +8,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.oguzdev.trendinghacker.R;
-import com.oguzdev.trendinghacker.bg.HNClient;
+import com.oguzdev.trendinghacker.client.HNClient;
 import com.oguzdev.trendinghacker.model.NewsItem;
 import com.oguzdev.trendinghacker.util.MeasureUtils;
 
@@ -28,24 +28,6 @@ public class SetupActivity extends Activity implements SetupFragment.OnFragmentI
         if(getActionBar() != null) {
             getActionBar().setElevation(MeasureUtils.pxFromDp(2));
         }
-
-        HNClient hn = new HNClient(this, new HNClient.RetrieveTrendingListener() {
-            @Override
-            public void onRetrieve(NewsItem[] items) {
-                if(items != null) {
-                    Log.d("oguz", "retrieved news items with length "+items.length);
-                    for(int i=0;i<items.length;i++) {
-                        if(items[i] != null) {
-                            Log.i("oguz", items[i].toString());
-                        }
-                        else {
-                            Log.d("oguz", "items["+i+"] is null");
-                        }
-                    }
-                }
-            }
-        });
-//        hn.beginRetrieveTrending();
     }
 
 
