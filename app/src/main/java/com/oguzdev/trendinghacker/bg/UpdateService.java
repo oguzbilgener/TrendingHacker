@@ -17,6 +17,7 @@ import com.oguzdev.trendinghacker.R;
 import com.oguzdev.trendinghacker.client.HNClient;
 import com.oguzdev.trendinghacker.common.model.NewsItem;
 import com.oguzdev.trendinghacker.common.model.UpdatePrefs;
+import com.oguzdev.trendinghacker.common.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -131,14 +132,21 @@ public class UpdateService extends Service {
                         Intent saveIntent = new Intent(Intent.ACTION_VIEW);
                         PendingIntent savePendingIntent =
                                 PendingIntent.getActivity(context, 0, saveIntent, 0);
+
+                        String descriptionText = "";
+                        try {
+                            descriptionText = StringUtils.getDomainName(item.url);
+                        }
+                        catch(Exception e) {}
+
                         Notification notification = new NotificationCompat.Builder(context)
                                                            .setSmallIcon(R.mipmap.ic_launcher)
                                                            .extend(wearableExtender)
-                                                           .setContentTitle(item.title)
-                                                           .setStyle(bigStyle.setBigContentTitle(item.title))
+                                                           .setContentTitle(descriptionText)
+                                                           .setContentText(item.title)
                                                            .addAction(android.R.drawable.ic_input_add, getString(R.string.action_save), savePendingIntent)
                                                            .build();
-                        notificationManager.notify((int)(item.id % 100000000), notification);
+                        notificationManager.notify((int) (item.id % 100000000), notification);
                     }
 
 
