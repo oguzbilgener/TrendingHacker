@@ -13,8 +13,8 @@ import android.widget.Button;
 
 import com.oguzdev.trendinghacker.R;
 import com.oguzdev.trendinghacker.bg.UpdateService;
-import com.oguzdev.trendinghacker.model.NewsItem;
-import com.oguzdev.trendinghacker.model.UpdatePrefs;
+import com.oguzdev.trendinghacker.common.model.NewsItem;
+import com.oguzdev.trendinghacker.common.model.UpdatePrefs;
 import com.oguzdev.trendinghacker.util.AlarmUtils;
 
 

@@ -5,22 +5,18 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.BitmapFactory;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.PowerManager;
-import android.preference.Preference;
-import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.util.Log;
 
-import com.google.gson.Gson;
 import com.oguzdev.trendinghacker.R;
 import com.oguzdev.trendinghacker.client.HNClient;
-import com.oguzdev.trendinghacker.model.NewsItem;
-import com.oguzdev.trendinghacker.model.UpdatePrefs;
+import com.oguzdev.trendinghacker.common.model.NewsItem;
+import com.oguzdev.trendinghacker.common.model.UpdatePrefs;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -114,8 +110,13 @@ public class UpdateService extends Service {
                     if(newItems.size() > 3) {
                         newItems = newItems.subList(0, 3);
                     }
+
                     NotificationManagerCompat notificationManager =
                         NotificationManagerCompat.from(context);
+
+                    for (int i = 0; i < prefs.recentlyDisplayedItems.length; i++) {
+                        notificationManager.cancel((int)(prefs.recentlyDisplayedItems[i].id % 100000000));
+                    }
 
                     NotificationCompat.BigTextStyle bigStyle = new NotificationCompat.BigTextStyle();
 
@@ -124,19 +125,20 @@ public class UpdateService extends Service {
                                     .setHintHideIcon(true)
                                     .setBackground(BitmapFactory.decodeResource(context.getResources(), R.drawable.contemporary_china));
 
-                    NotificationCompat.Builder builder = new NotificationCompat.Builder(context)
-                        .setSmallIcon(R.mipmap.ic_launcher)
-//                        .setGroup(GROUP_KEY)
-                        .extend(wearableExtender);
+
 
                     for(NewsItem item: newItems) {
                         Intent saveIntent = new Intent(Intent.ACTION_VIEW);
                         PendingIntent savePendingIntent =
                                 PendingIntent.getActivity(context, 0, saveIntent, 0);
-                        Notification notification = builder.setStyle(bigStyle.setBigContentTitle(item.title))
+                        Notification notification = new NotificationCompat.Builder(context)
+                                                           .setSmallIcon(R.mipmap.ic_launcher)
+                                                           .extend(wearableExtender)
+                                                           .setContentTitle(item.title)
+                                                           .setStyle(bigStyle.setBigContentTitle(item.title))
                                                            .addAction(android.R.drawable.ic_input_add, getString(R.string.action_save), savePendingIntent)
                                                            .build();
-                        notificationManager.notify((int)(long) item.id, notification);
+                        notificationManager.notify((int)(item.id % 100000000), notification);
                     }
 
 

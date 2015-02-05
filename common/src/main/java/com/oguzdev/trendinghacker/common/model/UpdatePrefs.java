@@ -1,4 +1,4 @@
-package com.oguzdev.trendinghacker.model;
+package com.oguzdev.trendinghacker.common.model;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -6,7 +6,6 @@ import android.preference.PreferenceManager;
 
 import com.google.gson.Gson;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -34,11 +33,12 @@ public class UpdatePrefs {
     }
 
     public void insertRecentlyDisplayed(List<NewsItem> newItems) {
-        NewsItem[] updated = new NewsItem[recentlyDisplayedItems.length + newItems.size()];
+        int oldMaxSize = recentlyDisplayedItems.length < 50 ? recentlyDisplayedItems.length : 50;
+        NewsItem[] updated = new NewsItem[oldMaxSize + newItems.size()];
         for(int i = 0; i < newItems.size(); i++) {
             updated[i] = newItems.get(i);
         }
-        for(int i = 0; i < recentlyDisplayedItems.length; i++) {
+        for(int i = 0; i < oldMaxSize; i++) {
             updated[i + newItems.size()] = recentlyDisplayedItems[i];
         }
         this.recentlyDisplayedItems = updated;

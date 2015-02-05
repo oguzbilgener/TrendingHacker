@@ -1,4 +1,4 @@
-package com.oguzdev.trendinghacker.util;
+package com.oguzdev.trendinghacker.common.util;
 
 import android.content.res.Resources;
 

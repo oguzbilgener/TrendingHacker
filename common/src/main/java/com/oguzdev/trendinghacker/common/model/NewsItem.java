@@ -1,4 +1,4 @@
-package com.oguzdev.trendinghacker.model;
+package com.oguzdev.trendinghacker.common.model;
 
 import java.io.Serializable;
 

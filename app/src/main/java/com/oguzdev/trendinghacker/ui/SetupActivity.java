@@ -3,14 +3,11 @@ package com.oguzdev.trendinghacker.ui;
 import android.app.Activity;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.oguzdev.trendinghacker.R;
-import com.oguzdev.trendinghacker.client.HNClient;
-import com.oguzdev.trendinghacker.model.NewsItem;
-import com.oguzdev.trendinghacker.util.MeasureUtils;
+import com.oguzdev.trendinghacker.common.util.MeasureUtils;
 
 
 public class SetupActivity extends Activity implements SetupFragment.OnFragmentInteractionListener {

@@ -1,4 +1,4 @@
-package com.oguzdev.trendinghacker;
+package com.oguzdev.trendinghacker.wearable;
 
 import android.app.Activity;
 import android.os.Bundle;
