@@ -1,6 +1,5 @@
-package com.oguzdev.trendinghacker.wearable;
+package com.oguzdev.trendinghacker.wearable.bg;
 
-import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -21,8 +20,8 @@ import com.oguzdev.trendinghacker.common.model.NewsItem;
 import com.oguzdev.trendinghacker.common.model.UpdatePrefs;
 import com.oguzdev.trendinghacker.common.util.Constants;
 import com.oguzdev.trendinghacker.common.util.NotificationUtils;
+import com.oguzdev.trendinghacker.wearable.R;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static com.google.android.gms.wearable.PutDataRequest.WEAR_URI_SCHEME;
@@ -40,6 +39,7 @@ public class NotificationUpdateService extends WearableListenerService
 
     @Override
     public void onCreate() {
+        Log.v(TAG, "NotificationUpdateService onCreate");
         super.onCreate();
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addApi(Wearable.API)
@@ -49,24 +49,8 @@ public class NotificationUpdateService extends WearableListenerService
     }
 
     @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-        if (null != intent) {
-            String action = intent.getAction();
-            if (Constants.ACTION_DISMISS.equals(action)) {
-                // We need to dismiss the wearable notification. We delete the data item that
-                // created the notification and that is how we inform the phone
-                ArrayList<Integer> notificationIds = intent.getExtras().getIntegerArrayList(Constants.KEY_NOTIFICATION_ID);
-
-
-//                dismissPhoneNotification(notificationId);
-            }
-        }
-        return super.onStartCommand(intent, flags, startId);
-    }
-
-    @Override
     public void onDataChanged(DataEventBuffer dataEvents) {
-        Log.d(TAG, "onDataChanged");
+        Log.d(TAG, "NotificationUpdateService onDataChanged");
         for (DataEvent dataEvent : dataEvents) {
             if (dataEvent.getType() == DataEvent.TYPE_CHANGED) {
                 DataMap dataMap = DataMapItem.fromDataItem(dataEvent.getDataItem()).getDataMap();
@@ -82,8 +66,11 @@ public class NotificationUpdateService extends WearableListenerService
                         NotificationUtils.notifyNews(this, newsItems,
                                 R.drawable.contemporary_china,
                                 R.mipmap.ic_launcher,
-                                android.R.drawable.ic_input_add,
-                                R.string.action_save);
+                                android.R.drawable.ic_input_get,
+                                R.string.action_save,
+                                android.R.drawable.ic_menu_zoom,
+                                R.string.action_browser,
+                                NotificationActionTransmitterService.class);
                     }
                     else {
                         if (Log.isLoggable(TAG, Log.ERROR)) {
@@ -96,11 +83,6 @@ public class NotificationUpdateService extends WearableListenerService
                 if (Log.isLoggable(TAG, Log.DEBUG)) {
                     Log.d(TAG, "DataItem deleted: " + dataEvent.getDataItem().getUri().getPath());
                 }
-//                if (Constants.BOTH_PATH.equals(dataEvent.getDataItem().getUri().getPath())) {
-//                    // Dismiss the corresponding notification
-//                    ((NotificationManager) getSystemService(NOTIFICATION_SERVICE))
-//                            .cancel(Constants.WATCH_ONLY_ID);
-//                }
             }
         }
     }

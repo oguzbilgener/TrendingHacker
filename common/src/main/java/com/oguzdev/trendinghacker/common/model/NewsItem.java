@@ -11,12 +11,14 @@ public class NewsItem implements Serializable {
     public Long time;
     public String title;
     public String url;
+    public int score;
 
-    public NewsItem(Long id, Long time, String title, String url) {
+    public NewsItem(Long id, Long time, String title, String url, int score) {
         this.id = id;
         this.time = time;
         this.title = title;
         this.url = url;
+        this.score = score;
     }
 
     public NewsItem() {
@@ -24,6 +26,7 @@ public class NewsItem implements Serializable {
         this.time = 0L;
         this.title = "";
         this.url = "";
+        this.score = 0;
     }
 
     public String toString() {

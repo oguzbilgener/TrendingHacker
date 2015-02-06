@@ -30,7 +30,6 @@ import java.util.List;
 public class UpdateService extends Service implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
     final static String TAG = "oguz";
-    final static String GROUP_KEY = "group_key_trending_news";
 
     public static final int UPDATE_TIMEOUT = 90; // seconds
     public static final int MIN_UPDATE_INTERVAL = 30; // minutes
@@ -70,6 +69,9 @@ public class UpdateService extends Service implements GoogleApiClient.Connection
     private void finishService() {
         if(wl != null && wl.isHeld()) {
             wl.release();
+        }
+        if(timeoutHandler != null) {
+            timeoutHandler.removeCallbacksAndMessages(null);
         }
         if(mGoogleApiClient != null && mGoogleApiClient.isConnected()) {
             mGoogleApiClient.disconnect();
@@ -153,6 +155,9 @@ public class UpdateService extends Service implements GoogleApiClient.Connection
                         newItems = newItems.subList(0, 3);
                     }
 
+                    prefs.insertRecentlyDisplayed(newItems);
+                    prefs.storeUpdatePrefs(context);
+
                     if (mGoogleApiClient.isConnected()) {
                         PutDataMapRequest putDataMapRequest = PutDataMapRequest.create(Constants.NOTIF_PATH);
                         putDataMapRequest.getDataMap().putString(Constants.NEWS_DATA, new Gson().toJson(newItems));
@@ -169,21 +174,16 @@ public class UpdateService extends Service implements GoogleApiClient.Connection
                                         else {
                                             Log.d(TAG, "notif sent to wear, success!");
                                         }
+                                        finishService();
                                     }
                                 });
                     } else {
                         Log.e(TAG, "buildWearableOnlyNotification(): no Google API Client connection");
+                        finishService();
                     }
-
-//                    NotificationUtils.cancelNewsNotifications(context, prefs.recentlyDisplayedItems);
-//                    NotificationUtils.notifyNews(context, newItems,
-//                            R.drawable.contemporary_china,
-//                            R.mipmap.ic_launcher,
-//                            android.R.drawable.ic_input_add,
-//                            R.string.action_save);
-
-                    prefs.insertRecentlyDisplayed(newItems);
-                    prefs.storeUpdatePrefs(context);
+                }
+                else {
+                    finishService();
                 }
             }
             else {

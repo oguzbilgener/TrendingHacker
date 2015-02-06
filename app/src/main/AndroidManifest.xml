@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.oguzdev.trendinghacker"
-    android:sharedUserId="com.oguzdev.trendinghacker">
+    android:sharedUserId="com.oguzdev.trendinghacker" >
 
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -30,13 +30,16 @@
             android:exported="true" >
         </service>
 
-        <receiver android:process=":remote" android:name=".bg.UpdateReceiver" />
-        <receiver android:enabled="true" android:name=".bg.NetworkChangeReceiver">
+        <receiver
+            android:name=".bg.UpdateReceiver"
+            android:process=":remote" />
+        <receiver
+            android:name=".bg.NetworkChangeReceiver"
+            android:enabled="true" >
             <intent-filter>
                 <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
             </intent-filter>
         </receiver>
-
         <receiver android:name=".bg.BootCompletedReceiver" >
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
@@ -44,6 +47,18 @@
             </intent-filter>
         </receiver>
 
+        <service
+            android:name=".bg.NotificationActionReceiverService"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.google.android.gms.wearable.BIND_LISTENER" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="com.oguzdev.trendinghacker.action.READ_LATER" />
+                <action android:name="com.oguzdev.trendinghacker.action.OPEN_IN_BROWSER" />
+            </intent-filter>
+        </service>
     </application>
 
 </manifest>

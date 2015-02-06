@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.oguzdev.trendinghacker.wearable"
-    android:sharedUserId="com.oguzdev.trendinghacker">
+    android:sharedUserId="com.oguzdev.trendinghacker" >
 
     <uses-feature android:name="android.hardware.type.watch" />
 
@@ -13,24 +13,32 @@
         <activity
             android:name=".TrendingActivity"
             android:label="@string/app_name" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+            <!-- <intent-filter> -->
+            <!-- <action android:name="android.intent.action.MAIN" /> -->
+
+
+            <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
+            <!-- </intent-filter> -->
         </activity>
+        <activity
+            android:name="android.support.wearable.activity.ConfirmationActivity"
+            android:theme="@style/TransparentTheme" />
 
-        <service android:name=".NotificationUpdateService">
+        <service android:name=".bg.NotificationUpdateService" >
             <intent-filter>
-                <action
-                    android:name="com.google.android.gms.wearable.BIND_LISTENER" />
-            </intent-filter>
-            <intent-filter>
-                <action
-                    android:name="com.example.android.wearable.synchronizednotifications.DISMISS" />
+                <action android:name="com.google.android.gms.wearable.BIND_LISTENER" />
             </intent-filter>
         </service>
-
+        <service
+            android:name=".bg.NotificationActionTransmitterService"
+            android:enabled="true"
+            android:exported="true" >
+            <intent-filter>
+                <action android:name="com.oguzdev.trendinghacker.wearable.action.READ_LATER" />
+                <action android:name="com.oguzdev.trendinghacker.wearable.action.OPEN_IN_BROWSER" />
+            </intent-filter>
+        </service>
     </application>
 
 </manifest>

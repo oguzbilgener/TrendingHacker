@@ -44,4 +44,5 @@ dependencies {
     compile 'com.mcxiaoke.volley:library:1.0.+'
     compile 'com.firebase:firebase-client-android:2.1.2'
     compile 'com.hannesdorfmann.smoothprogressbar:library:1.0.0'
+    wearApp project(':wearable')
 }
