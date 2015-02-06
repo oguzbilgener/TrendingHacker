@@ -44,6 +44,7 @@ public class NotificationUtils {
             saveIntent.setAction(Constants.ACTION_READ_LATER_W);
             saveIntent.putExtra(Constants.URL_ACTION, Constants.ACTION_READ_LATER);
             saveIntent.putExtra(Constants.URL_DATA, item.url);
+            saveIntent.putExtra("some_arbitrary_int", (int)(Math.random() * 100000));
             PendingIntent savePendingIntent =
                     PendingIntent.getService(context, 0, saveIntent, 0);
 
@@ -51,6 +52,7 @@ public class NotificationUtils {
             browserIntent.setAction(Constants.ACTION_OPEN_IN_BROWSER_W);
             browserIntent.putExtra(Constants.URL_ACTION, Constants.ACTION_OPEN_IN_BROWSER);
             browserIntent.putExtra(Constants.URL_DATA, item.url);
+            browserIntent.putExtra("some_arbitrary_int", (int)(Math.random() * 100000));
             PendingIntent browserPendingIntent =
                     PendingIntent.getService(context, 0, browserIntent, 0);
 

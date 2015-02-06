@@ -33,14 +33,16 @@ public class NotificationActionReceiverService extends WearableListenerService
         Log.d(TAG, "NotificationActionReceiverService onDataChanged");
         for (DataEvent dataEvent : dataEvents) {
             if (dataEvent.getType() == DataEvent.TYPE_CHANGED) {
+                Log.d(TAG, "NotificationActionReceiverService found changed");
                 DataMap dataMap = DataMapItem.fromDataItem(dataEvent.getDataItem()).getDataMap();
                 if(Constants.URL_PATH.equals(dataEvent.getDataItem().getUri().getPath())) {
+                    Log.d(TAG, "NotificationActionReceiverService found url path");
                     String url = dataMap.getString(Constants.URL_DATA);
                     String action = dataMap.getString(Constants.URL_ACTION);
-                    if(Constants.ACTION_READ_LATER.equals(action)) {
+                    if(Constants.ACTION_READ_LATER_W.equals(action)) {
                         readLater(url);
                     }
-                    else if(Constants.ACTION_OPEN_IN_BROWSER.equals(action)) {
+                    else if(Constants.ACTION_OPEN_IN_BROWSER_W.equals(action)) {
                         openInBrowser(url);
                     }
                 }

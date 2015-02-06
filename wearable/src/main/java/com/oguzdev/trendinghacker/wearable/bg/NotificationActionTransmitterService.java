@@ -37,8 +37,9 @@ public class NotificationActionTransmitterService extends Service implements Goo
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         if (null != intent) {
+            Log.d("oguz", "NotificationActionTransmitterService intent not null");
             String action = intent.getAction();
-            if (Constants.ACTION_READ_LATER.equals(action) || Constants.ACTION_OPEN_IN_BROWSER.equals(action)) {
+            if (Constants.ACTION_READ_LATER_W.equals(action) || Constants.ACTION_OPEN_IN_BROWSER_W.equals(action)) {
                 Log.d("oguz", "NotificationActionTransmitterService has action");
                 String url = intent.getExtras().getString(Constants.URL_DATA);
                 if(url != null) {
@@ -57,6 +58,9 @@ public class NotificationActionTransmitterService extends Service implements Goo
                 }
             }
         }
+        else {
+            Log.w("oguz", "NotificationActionTransmitterService intent NULL");
+        }
         return super.onStartCommand(intent, flags, startId);
     }
 
@@ -72,6 +76,7 @@ public class NotificationActionTransmitterService extends Service implements Goo
             PutDataMapRequest putDataMapRequest = PutDataMapRequest.create(Constants.URL_PATH);
             putDataMapRequest.getDataMap().putString(Constants.URL_DATA, url);
             putDataMapRequest.getDataMap().putString(Constants.URL_ACTION, action);
+            putDataMapRequest.getDataMap().putInt("some_arbitrary_int", (int)(Math.random() * 100000));
             PutDataRequest request = putDataMapRequest.asPutDataRequest();
             Wearable.DataApi.putDataItem(mGoogleApiClient, request)
                     .setResultCallback(new ResultCallback<DataApi.DataItemResult>() {
@@ -92,8 +97,11 @@ public class NotificationActionTransmitterService extends Service implements Goo
             finishFailed();
         }
 
+        int animationType = Constants.ACTION_OPEN_IN_BROWSER_W.equals(action) ?
+                ConfirmationActivity.OPEN_ON_PHONE_ANIMATION :
+                ConfirmationActivity.SUCCESS_ANIMATION;
         Intent displayIntent = new Intent(this, ConfirmationActivity.class);
-        displayIntent.putExtra(ConfirmationActivity.EXTRA_ANIMATION_TYPE, ConfirmationActivity.SUCCESS_ANIMATION);
+        displayIntent.putExtra(ConfirmationActivity.EXTRA_ANIMATION_TYPE, animationType);
         displayIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(displayIntent);
     }
