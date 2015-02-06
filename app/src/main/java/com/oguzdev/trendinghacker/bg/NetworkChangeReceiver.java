@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
+import java.util.Date;
+
 /**
  * Copyright 2015 Oğuz Bilgener
  * TrendingHacker
@@ -12,7 +14,7 @@ import android.util.Log;
 public class NetworkChangeReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
-//        Log.d(context.getString(R.string.tag), "Network State Changed! " + (new Date()));
+        Log.d("oguz", "Network State Changed! " + (new Date()));
         Intent passIntent = new Intent(context, UpdateService.class);
         // pass all the extras
         passIntent.putExtras(intent);

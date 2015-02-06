@@ -8,5 +8,4 @@
     <string name="button_service_enable">Enable</string>
     <string name="button_service_disable">Disable</string>
 
-    <string name="action_save">Save to Instapaper</string>
 </resources>
