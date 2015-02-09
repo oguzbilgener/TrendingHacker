@@ -1,5 +1,6 @@
 package com.oguzdev.trendinghacker.bg;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -52,8 +53,9 @@ public class NotificationActionReceiverService extends WearableListenerService
 
     private void openInBrowser(String url) {
         Log.i(TAG, "openInBrowser START");
-        //Intent browserIntent = new Intent(Intent.ACTION_VIEW);
-//        primaryIntent.setData(Uri.parse(item.url));
+        Intent browserIntent = new Intent(Intent.ACTION_VIEW);
+        browserIntent.setData(Uri.parse(url));
+        startActivity(browserIntent);
     }
 
     private void readLater(String url) {
