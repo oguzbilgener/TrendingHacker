@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Handler;
 import android.util.Log;
 
+import com.oguzdev.trendinghacker.common.model.UpdatePrefs;
 import com.oguzdev.trendinghacker.util.AlarmUtils;
 
 /**
@@ -20,7 +21,10 @@ public class BootCompletedReceiver extends BroadcastReceiver {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                AlarmUtils.setupHourlyAlarm(context);
+                UpdatePrefs prefs = UpdatePrefs.getUpdatePrefs(context);
+                if(prefs != null && prefs.enabled) {
+                    AlarmUtils.setupHourlyAlarm(context);
+                }
                 Log.d("oguz", "starting service 30 secs after boot completed");
                 Intent passIntent = new Intent(context, UpdateService.class);
                 // pass all the extras
