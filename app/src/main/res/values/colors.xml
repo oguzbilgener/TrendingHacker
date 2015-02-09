@@ -4,4 +4,6 @@
     <color name="primary_dark">#ffba5f18</color>
     <color name="primary_pressed">#ffbf851e</color>
     <color name="accent">#B0BEC5</color>
+    <color name="button_enable">#4CAF50</color>
+    <color name="button_disable">#F44336</color>
 </resources>

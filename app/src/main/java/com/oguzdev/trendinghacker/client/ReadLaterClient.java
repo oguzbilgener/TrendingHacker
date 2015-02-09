@@ -55,7 +55,7 @@ public class ReadLaterClient {
         public void failure(String reason);
     }
 
-    public Credentials getStoredCredentials(Context context) {
+    public static Credentials getStoredCredentials(Context context) {
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
         Credentials storedCredentials = null;
         if(sp.contains(Credentials.kUsername) && sp.contains(Credentials.kPassword)) {
@@ -65,7 +65,7 @@ public class ReadLaterClient {
         return storedCredentials;
     }
 
-    public void storeCredentials(Credentials credentials, Context context) {
+    public static void storeCredentials(Credentials credentials, Context context) {
         if(credentials == null) {
             throw new IllegalArgumentException("no credentials to store");
         }

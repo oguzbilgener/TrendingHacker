@@ -3,6 +3,6 @@
     <string name="hello_round">Hello Round World!</string>
     <string name="hello_square">Hello Square World!</string>
 
-    <string name="action_browser">Open in Browser</string>
+    <string name="action_browser">Open on phone</string>
     <string name="action_save">Send to Instapaper</string>
 </resources>

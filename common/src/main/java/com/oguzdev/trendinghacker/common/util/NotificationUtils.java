@@ -6,15 +6,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
-import android.support.wearable.activity.ConfirmationActivity;
-import android.util.Log;
 
 import com.oguzdev.trendinghacker.common.model.NewsItem;
-import com.oguzdev.trendinghacker.common.model.UpdatePrefs;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -39,6 +36,8 @@ public class NotificationUtils {
         NotificationCompat.BigTextStyle bigStyle = new NotificationCompat.BigTextStyle();
 
         Bitmap background = BitmapFactory.decodeResource(context.getResources(), backgroundDrawableResource);
+
+        Collections.reverse(items);
 
         for(NewsItem item: items) {
             Intent saveIntent = new Intent(context, urlActionTransmitterServiceName);
@@ -75,7 +74,6 @@ public class NotificationUtils {
                     .extend(wearableExtender)
                     .setContentTitle(descriptionText)
                     .setContentText(item.title)
-//                    .setContentIntent(browserPendingIntent)
                     .setGroup(GROUP_KEY)
                     .addAction(browserIconResource, context.getString(browserStringResource), browserPendingIntent)
                     .addAction(saveIconResource, context.getString(saveStringResource), savePendingIntent)

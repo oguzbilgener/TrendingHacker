@@ -13,13 +13,30 @@
         android:id="@+id/card_setup_timer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        card_view:cardCornerRadius="@dimen/card_corner_radius"
-        android:padding="@dimen/card_padding">
+        card_view:cardCornerRadius="@dimen/card_corner_radius">
 
-        <Button android:id="@+id/button_service_toggle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            tools:text="enable" />
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="110dp">
+            <TextView
+                android:id="@+id/description_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/description_text"
+                android:layout_centerHorizontal="true"
+                android:layout_alignParentTop="true"
+                android:layout_marginTop="@dimen/card_padding"
+                android:layout_marginStart="@dimen/card_padding"
+                android:layout_marginEnd="@dimen/card_padding"
+                android:textSize="16sp" />
+            <Button android:id="@+id/button_service_toggle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentEnd="true"
+                tools:text="enable"
+                style="?android:attr/borderlessButtonStyle" />
+        </RelativeLayout>
 
     </android.support.v7.widget.CardView>
 
@@ -30,10 +47,54 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/activity_vertical_margin"
-        card_view:cardCornerRadius="@dimen/card_corner_radius"
-        android:padding="@dimen/card_padding">
-        <TextView android:text="@string/action_settings" android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+        card_view:cardCornerRadius="@dimen/card_corner_radius">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="180dp">
+            <TextView
+                android:id="@+id/read_later_headline"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
+                android:layout_marginTop="@dimen/card_padding"
+                android:layout_marginStart="@dimen/card_padding"
+                android:layout_marginEnd="@dimen/card_padding"
+                style="?android:attr/textAppearanceMedium"
+                android:text="@string/instapaper_settings_headline" />
+
+            <EditText
+                android:id="@+id/read_later_username_input"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/read_later_headline"
+                android:hint="@string/instapaper_username_hint"
+                android:layout_marginTop="@dimen/card_padding"
+                android:layout_marginStart="@dimen/card_padding"
+                android:layout_marginEnd="@dimen/card_padding" />
+
+            <EditText
+                android:id="@+id/read_later_password_input"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/read_later_username_input"
+                android:hint="@string/instapaper_password_hint"
+                android:layout_marginTop="@dimen/card_padding"
+                android:layout_marginStart="@dimen/card_padding"
+                android:layout_marginEnd="@dimen/card_padding"
+                android:inputType="textPassword" />
+
+            <Button
+                android:id="@+id/read_later_login_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentEnd="true"
+                style="?android:attr/borderlessButtonStyle"
+                android:text="@string/read_later_login_button" />
+
+        </RelativeLayout>
 
     </android.support.v7.widget.CardView>
 

@@ -1,5 +1,9 @@
 package com.oguzdev.trendinghacker.ui;
 
+import android.animation.ArgbEvaluator;
+import android.animation.ObjectAnimator;
+import android.animation.PropertyValuesHolder;
+import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -10,9 +14,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
 
 import com.oguzdev.trendinghacker.R;
 import com.oguzdev.trendinghacker.bg.UpdateService;
+import com.oguzdev.trendinghacker.client.HNClient;
+import com.oguzdev.trendinghacker.client.ReadLaterClient;
 import com.oguzdev.trendinghacker.common.model.NewsItem;
 import com.oguzdev.trendinghacker.common.model.UpdatePrefs;
 import com.oguzdev.trendinghacker.util.AlarmUtils;
@@ -27,34 +35,13 @@ import com.oguzdev.trendinghacker.util.AlarmUtils;
  * create an instance of this fragment.
  */
 public class SetupFragment extends Fragment implements View.OnClickListener {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
 
     private OnFragmentInteractionListener mListener;
-
+    private View rootView;
     private UpdatePrefs prefs;
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment SetupFragment.
-     */
-    // TODO: Rename and change types and number of parameters
     public static SetupFragment newInstance(String param1, String param2) {
         SetupFragment fragment = new SetupFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
         return fragment;
     }
 
@@ -65,20 +52,18 @@ public class SetupFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_setup, container, false);
+        rootView = inflater.inflate(R.layout.fragment_setup, container, false);
 
         Button serviceToggleButton = (Button) rootView.findViewById(R.id.button_service_toggle);
         serviceToggleButton.setOnClickListener(this);
-        updateServiceToggleButton(serviceToggleButton);
+        updateServiceToggleButton(serviceToggleButton, prefs.enabled, prefs.enabled);
+
+        rootView.findViewById(R.id.read_later_login_button).setOnClickListener(this);
 
         return rootView;
     }
@@ -114,8 +99,11 @@ public class SetupFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onClick(View v) {
         if(v.getId() == R.id.button_service_toggle) {
+            updateServiceToggleButton((Button) v, prefs.enabled, !prefs.enabled);
             toggleService();
-            updateServiceToggleButton((Button) v);
+        }
+        else if(v.getId() == R.id.read_later_login_button) {
+            saveReadLaterCredentials();
         }
     }
 
@@ -134,13 +122,48 @@ public class SetupFragment extends Fragment implements View.OnClickListener {
         }
     }
 
-    public void updateServiceToggleButton(Button button) {
-        if(prefs.enabled) {
+    public void updateServiceToggleButton(Button button, boolean oldStateIsEnabled,
+                                          boolean newStateIsEnabled) {
+        int disableColor = getResources().getColor(R.color.button_disable);
+        int enableColor = getResources().getColor(R.color.button_enable);
+        int oldColor, newColor;
+        if(oldStateIsEnabled) {
+            button.setTextColor(disableColor);
+            oldColor = disableColor;
+        }
+        else {
+            button.setTextColor(enableColor);
+            oldColor = enableColor;
+        }
+        if(newStateIsEnabled) {
             button.setText(getString(R.string.button_service_disable));
+            newColor = disableColor;
         }
         else {
             button.setText(getString(R.string.button_service_enable));
+            newColor = enableColor;
         }
+
+        ValueAnimator colorAnim = ObjectAnimator.ofInt(button, "textColor", oldColor, newColor);
+        colorAnim.setDuration(200);
+        colorAnim.setEvaluator(new ArgbEvaluator());
+        colorAnim.start();
+    }
+
+    public void saveReadLaterCredentials() {
+        EditText usernameInput = (EditText) rootView.findViewById(R.id.read_later_username_input);
+        EditText passwordInput = (EditText) rootView.findViewById(R.id.read_later_password_input);
+
+        ReadLaterClient.Credentials credentials = new ReadLaterClient.Credentials(
+                                                        usernameInput.getText().toString(),
+                                                        passwordInput.getText().toString());
+        ReadLaterClient.storeCredentials(credentials, getActivity());
+
+        usernameInput.setText("");
+        passwordInput.setText("");
+
+        Toast.makeText(getActivity(), R.string.read_later_credentials_saved,
+                Toast.LENGTH_SHORT).show();
     }
 
     /**

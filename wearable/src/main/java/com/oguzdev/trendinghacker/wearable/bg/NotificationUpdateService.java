@@ -12,6 +12,7 @@ import com.google.android.gms.wearable.DataEvent;
 import com.google.android.gms.wearable.DataEventBuffer;
 import com.google.android.gms.wearable.DataMap;
 import com.google.android.gms.wearable.DataMapItem;
+import com.google.android.gms.wearable.MessageEvent;
 import com.google.android.gms.wearable.Wearable;
 import com.google.android.gms.wearable.WearableListenerService;
 import com.google.gson.Gson;
@@ -64,11 +65,11 @@ public class NotificationUpdateService extends WearableListenerService
                         Log.d(TAG, "Wear notifications updated with "+newsItems.size()+" new items.");
                         NotificationUtils.cancelNewsNotifications(this, prefs.recentlyDisplayedItems);
                         NotificationUtils.notifyNews(this, newsItems,
-                                R.drawable.contemporary_china,
+                                R.drawable.background2,
                                 R.mipmap.ic_launcher,
-                                android.R.drawable.ic_input_get,
+                                R.drawable.ic_instapaper,
                                 R.string.action_save,
-                                android.R.drawable.ic_menu_zoom,
+                                R.drawable.ic_phone_android_white_48dp,
                                 R.string.action_browser,
                                 NotificationActionTransmitterService.class);
                     }
@@ -112,5 +113,18 @@ public class NotificationUpdateService extends WearableListenerService
             Log.e(TAG, "dismissWearableNotification(): failed to delete DataItem");
         }
         mGoogleApiClient.disconnect();
+    }
+
+    @Override
+    public void onMessageReceived(MessageEvent messageEvent) {
+
+        if (messageEvent.getPath().equals("/message_path")) {
+            final String message = new String(messageEvent.getData());
+            Log.v("myTag", "Message path received on watch is: " + messageEvent.getPath());
+            Log.v("myTag", "Message received on watch is: " + message);
+        }
+        else {
+            super.onMessageReceived(messageEvent);
+        }
     }
 }

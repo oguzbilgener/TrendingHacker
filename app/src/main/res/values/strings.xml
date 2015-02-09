@@ -8,4 +8,13 @@
     <string name="button_service_enable">Enable</string>
     <string name="button_service_disable">Disable</string>
 
+    <string name="description_text">TrendingHacker is an Android Wear app that displays hourly trending news from Hacker News on your watch.</string>
+    <string name="instapaper_settings_headline">Instapaper Account</string>
+
+    <string name="instapaper_username_hint">username</string>
+    <string name="instapaper_password_hint">password</string>
+    <string name="read_later_login_button">Save</string>
+
+    <string name="read_later_credentials_saved">Your account details have been saved.</string>
+
 </resources>
