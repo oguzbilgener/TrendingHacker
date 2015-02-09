@@ -1,6 +1,6 @@
 # TrendingHacker
 
-TrendingHacker is _experimental_ an Android Wear app that displays hourly trending news from Hacker News on your watch.
+TrendingHacker is an _experimental_ Android Wear app that displays headlines of popular articles from Hacker News on your watch every hour.
 
 ![TrendingHacker Wear App](watchdisplay.png)
 
