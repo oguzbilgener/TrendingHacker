@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.wearable.activity.ConfirmationActivity;
+import android.util.Log;
 
 import com.oguzdev.trendinghacker.common.model.NewsItem;
 import com.oguzdev.trendinghacker.common.model.UpdatePrefs;
@@ -46,7 +47,7 @@ public class NotificationUtils {
             saveIntent.putExtra(Constants.URL_DATA, item.url);
             saveIntent.putExtra("some_arbitrary_int", (int)(Math.random() * 100000));
             PendingIntent savePendingIntent =
-                    PendingIntent.getService(context, 0, saveIntent, 0);
+                    PendingIntent.getService(context, (int) (item.id % 100000000), saveIntent, PendingIntent.FLAG_CANCEL_CURRENT);
 
             Intent browserIntent = new Intent(context, urlActionTransmitterServiceName);
             browserIntent.setAction(Constants.ACTION_OPEN_IN_BROWSER_W);
@@ -54,7 +55,7 @@ public class NotificationUtils {
             browserIntent.putExtra(Constants.URL_DATA, item.url);
             browserIntent.putExtra("some_arbitrary_int", (int)(Math.random() * 100000));
             PendingIntent browserPendingIntent =
-                    PendingIntent.getService(context, 0, browserIntent, 0);
+                    PendingIntent.getService(context, (int) (item.id % 100000000), browserIntent, PendingIntent.FLAG_CANCEL_CURRENT);
 
             String descriptionText = "";
             try {
