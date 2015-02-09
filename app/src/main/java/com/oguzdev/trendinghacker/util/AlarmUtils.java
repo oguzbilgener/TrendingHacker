@@ -17,7 +17,7 @@ import java.util.Calendar;
 public class AlarmUtils {
 
     public static final int HOURLY_ALARM_ID = 463681;
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
 
     public static void setupHourlyAlarm(Context context) {
 
